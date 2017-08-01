@@ -1,4 +1,5 @@
 from prometheus_client.core import GaugeMetricFamily
+from prometheus_client.core import CounterMetricFamily
 
 import json, requests, sys, os, ast, signal, datetime
 
@@ -27,7 +28,6 @@ class MailjetCollector(object):
 
     metric_description = 'Mailjet number %s' 
 
-
     now = datetime.datetime.utcnow()
     now_minus_delta = now - datetime.timedelta(minutes = 5)
     dateTimeRqFormat = '%Y-%m-%dT%H:%M:00+00:00'
@@ -47,3 +47,28 @@ class MailjetCollector(object):
             gauge = GaugeMetricFamily(self.METRIC_PREFIX + name_attribute, metric_description % name_attribute, value=value)
 
             yield gauge
+    
+
+
+    # get total for the day
+
+    today = datetime.date.today()
+    begintime = today.strftime("%Y-%m-%dT00:00:00+00:00")
+    endtime = today.strftime("%Y-%m-%dT23:59:59+00:00")
+
+    print( begintime )
+    print( endtime)
+
+    payload = {'FromTS': begintime , 'ToTS': endtime} 
+    r = requests.get(self.api + self.endpoint , params=payload, auth=(self.api_key_public, self.api_key_private))
+
+    datas = r.json()['Data']
+
+    for data in datas:
+        for attribute, value in data.items():
+
+            name_attribute = self.convertCamelToSnake(attribute)
+
+            counter = CounterMetricFamily(self.METRIC_PREFIX + 'daily_' + name_attribute, metric_description % name_attribute, value=value)
+
+            yield counter
