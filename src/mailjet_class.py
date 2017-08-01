@@ -52,7 +52,7 @@ class MailjetCollector(object):
 
     # get total for the day
 
-    today = datetime.date.today()
+    today = datetime.datetime.utcnow().date()
     begintime = today.strftime("%Y-%m-%dT00:00:00+00:00")
     endtime = today.strftime("%Y-%m-%dT23:59:59+00:00")
 
