@@ -1,5 +1,5 @@
 
-version: '2'
+version: '3'
 services:
   mailjet-exporter:
     build: .
@@ -9,4 +9,3 @@ services:
       - BIND_PORT=9187
       - API_KEY_PRIVATE=YOUR_API_KEY_HERE
       - API_KEY_PUBLIC=YOUR_API_KEY_HERE
-
